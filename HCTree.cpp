@@ -1,6 +1,7 @@
 #include <queue>
 #include <vector>
 #include <fstream>
+#include <stack>
 #include "HCNode.h"
 #include "BitInputStream.h"
 #include "BitOutputStream.h"
@@ -56,16 +57,70 @@ void HCTree::build(const vector<int>& freqs){
 
 void HCTree::encode(byte symbol, BitOutputStream& out) const{
 
+
 }
 
 void HCTree::encode(byte symbol, ofstream& out) const{
+  HCNode * currentNode; // node to traverse through tree
+  HCNode * parentNode; // parent of currentNode
+  unsigned char bit; // decoded bit of symbol
+  std::stack<char> bits; // temp stack to hold bits encoded bits
+
+  // look in tree for symbol's node
+  for(int i=0; i<leaves.size(); i++){
+    if(leaves.at(i)->symb == symbol){
+      currentNode = leaves.at(i);
+    }
+  }
+
+  // loop through from symbol node to root and find bit reverse bit
+  // sequence
+  while (currentNode->parent) {
+    parentNode = currentNode->p;
+
+    // if right child, bit is 0
+    if (currentNode == parentNode->c0) {
+      bits.push('0');
+    }
+    // if left child, bit is 1
+    else {
+      bits.push('1');
+    }
+    currentNode = parentNode;
+  }
+
+  // pop off all bits in stack to get sequence in correct order
+  for(int i=0; i<bits.size(); i++){
+    bit = bits.top();
+    out << bit; // write into file
+    bits.pop();
+  }
 
 }
 
 int HCTree::decode(BitInputStream& in) const{
-
 }
 
 int HCTree::decode(ifstream& in) const{
+  unsigned char readBit;
+  HCNode * currentNode = root;
+  while(1){
+    readBit = in.get();
+    if(readBit == '0'){
+      currentNode = currentNode->c0;
+    }
 
+    else{
+      currentNode = currentNode->c1
+    }
+
+    if (!currentNode->c0 && !currentNode->c1) {
+      break;
+    }
+
+    if(in.eof()){
+      break;
+    }
+  }
+  return currentNode->symbol;
 }
