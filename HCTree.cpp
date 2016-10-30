@@ -15,7 +15,8 @@ using namespace std;
  */
 
 HCTree::~HCTree(){
-  
+  deleteAll(root);
+  delete leaves;
 }
 
 void HCTree::build(const vector<int>& freqs){
@@ -123,4 +124,14 @@ int HCTree::decode(ifstream& in) const{
     }
   }
   return currentNode->symbol;
+}
+
+void HCTree::deleteAll(HCNode * currentNode){
+  if(currentNode->c0){
+    deleteAll(currentNode->c0);
+  }
+  if(currentNode->c1){
+    deleteAll(currentNode->c0);
+  }
+  delete currentNode;
 }
