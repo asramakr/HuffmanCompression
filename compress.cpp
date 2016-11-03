@@ -46,6 +46,7 @@ int main(int argc, char** argv)
 
   std::ofstream outfile; //creates the outfile
   outfile.open(argv[2], std::ios::binary); //opens it so it can write to it
+  BitOutputStream out(outfile);
 
   //writes the header to the outfile, aka the freqs of each character
   for(int i=0; i<256; i++){
@@ -59,11 +60,11 @@ int main(int argc, char** argv)
   while((nextByte = infile.get()) != EOF){
     nextChar = (unsigned char)nextByte; 
 //    cout << "ENCODING " << nextChar << endl;
-    newTree.encode( nextChar, outfile); //encodes the byte
+    newTree.encode( nextChar, out); //encodes the byte
 //    cout << "nextChar: " << nextChar << endl;
-    if(infile.eof()){
-      break; //breaks if end of file
-    }
+//    if(infile.eof()){
+//      break; //breaks if end of file
+//    }
 
   }
 

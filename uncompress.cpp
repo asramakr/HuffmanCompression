@@ -33,6 +33,7 @@ int main(int argc, char** argv)
   
   // open file to read from
   infile.open(argv[1], std::ios::binary);
+  BitInputStream in(infile);
 
   // read 256 lines of freqs
   for (int i = 0; i < HEADERSIZE; i++) {
@@ -57,7 +58,7 @@ int main(int argc, char** argv)
     }    
 
     // decode infile byte by byte
-    int dRet = newTree.decode(infile);
+    int dRet = newTree.decode(in);
 
     // exit if reached end of file
     if(infile.eof()){

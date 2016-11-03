@@ -64,8 +64,49 @@ void HCTree::build(const vector<int>& freqs){
 }
 
 void HCTree::encode(byte symbol, BitOutputStream& out) const{
+  HCNode * currentNode; // node to traverse through tree
+  HCNode * parentNode; // parent of currentNode
+  std::stack<int> bits; // temp stack to hold encoded bits
+  int bit; // bit in encoded sequence for symbol
+  unsigned int bits_size = 0;
+
+  // look in tree for symbol's node
+  for (int i = 0; i < leaves.size(); i++) {
+    if (leaves.at(i) && (leaves.at(i)->symbol == symbol)) {
+      currentNode = leaves.at(i);
+    }
+  }
+
+  // loop through from symbol node to root and find bit reverse bit
+  // sequence
+  while (currentNode->p) {
+    parentNode = currentNode->p;
+//    cout << "currentNode: " << currentNode->symbol << endl;
+//    cout << "parentNode: " << parentNode->symbol << endl;
+
+    // if right child, bit is 0
+    if (currentNode == parentNode->c0) {
+//      cout << "pushing 0" << endl;
+      bits.push(0);
+      bits_size++;
+    }
+    // if left child, bit is 1
+    else {
+//      cout << "pushing 1" << endl;
+      bits.push(1);
+      bits_size++;
+    }
+    currentNode = parentNode;
+  }
 
 
+  // pop off all bits in stack to get sequence in correct order
+  for(int i=0; i<bits_size; i++){
+    bit = bits.top();
+    //cout << bit << endl;
+    out.writeBit(bit); // write to file's buffer as bit
+    bits.pop();
+  }
 }
 
 /**
@@ -119,6 +160,34 @@ void HCTree::encode(byte symbol, ofstream& out) const{
 }
 
 int HCTree::decode(BitInputStream& in) const{
+  unsigned char readBit;
+  int readNum;
+  HCNode * currentNode = root;
+  while(currentNode->c0 && currentNode->c1){
+    readNum = in.readBit();
+    if(readNum == EOF){
+      break;
+    }
+    //readBit = (unsigned char)readNum;
+    //cout << "readBit: " << readNum << endl;
+    if(readNum == 0){
+      currentNode = currentNode->c0;
+    }
+
+    else{
+      currentNode = currentNode->c1;
+    }
+
+//    if (!currentNode->c0 && !currentNode->c1) {
+//      break;
+//    }
+
+    if(in.eof()){
+      break;
+    }
+  }
+  return currentNode->symbol;
+  
 }
 
 /**
