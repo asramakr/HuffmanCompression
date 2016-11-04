@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #ifndef BITINPUTSTREAM_H
 #define BITINPUTSTREAM_H
 

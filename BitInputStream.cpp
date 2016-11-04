@@ -1,8 +1,9 @@
 #include <iostream>
 #include "BitInputStream.h"
 #include <math.h>
+#include <bitset>
 
-
+using namespace std;
 /** Constructor (Initialize a BitInputStream that will use
  *  the given istream for input.
  */
@@ -39,6 +40,7 @@ int BitInputStream::readBit() {
   
   lastInt = ((buf & (int)pow(2, nbits))/(int)pow(2, nbits));
 
+  cout << "InputStream Buffer: "<< std::bitset<8>(buf) << endl;  
   nbits++;
   return lastInt;
 

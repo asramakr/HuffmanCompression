@@ -59,12 +59,16 @@ int main(int argc, char** argv)
   //pulls the bytes from the infile
   while((nextByte = infile.get()) != EOF){
     nextChar = (unsigned char)nextByte; 
-//    cout << "ENCODING " << nextChar << endl;
+    if (infile.eof()) {
+      break;
+    }
+    //cout << "ENCODING " << nextChar << endl;
     newTree.encode( nextChar, out); //encodes the byte
 //    cout << "nextChar: " << nextChar << endl;
-//    if(infile.eof()){
-//      break; //breaks if end of file
-//    }
+    
+    if(infile.eof()){
+      break; //breaks if end of file
+    }
 
   }
 

@@ -36,6 +36,7 @@ void HCTree::build(const vector<int>& freqs){
       HCNode* p = new HCNode(freqs[i], i, 0, 0, 0);
       pq.push(p);
       leaves.at(i) = p;
+      //cout << "p->symbol: " << p->symbol << endl;
     }
   }
 
@@ -44,10 +45,10 @@ void HCTree::build(const vector<int>& freqs){
 
     // get and remove the 2 nodes w lowest counts
     auto bot1 = pq.top();
-//    cout << "lowest symbol: " << bot1->symbol << endl;
+    //cout << "lowest symbol: " << bot1->symbol << endl;
     pq.pop();
     auto bot2 = pq.top();
-//    cout << "second lowest symbol: " << bot2->symbol << endl;
+    //cout << "second lowest symbol: " << bot2->symbol << endl;
     pq.pop();
 
     unsigned int summedCount = bot1->count + bot2->count;
@@ -81,29 +82,23 @@ void HCTree::encode(byte symbol, BitOutputStream& out) const{
   // sequence
   while (currentNode->p) {
     parentNode = currentNode->p;
-//    cout << "currentNode: " << currentNode->symbol << endl;
-//    cout << "parentNode: " << parentNode->symbol << endl;
-
     // if right child, bit is 0
     if (currentNode == parentNode->c0) {
-//      cout << "pushing 0" << endl;
       bits.push(0);
       bits_size++;
     }
     // if left child, bit is 1
     else {
-//      cout << "pushing 1" << endl;
       bits.push(1);
       bits_size++;
     }
     currentNode = parentNode;
   }
 
-
   // pop off all bits in stack to get sequence in correct order
   for(int i=0; i<bits_size; i++){
+    //cout << bits_size << endl;
     bit = bits.top();
-    //cout << bit << endl;
     out.writeBit(bit); // write to file's buffer as bit
     bits.pop();
   }
