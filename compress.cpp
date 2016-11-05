@@ -72,6 +72,8 @@ int main(int argc, char** argv)
 
   }
 
+  out.flush();
+
   outfile.close(); //closes both files
   infile.close();
   

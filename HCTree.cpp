@@ -80,6 +80,7 @@ void HCTree::encode(byte symbol, BitOutputStream& out) const{
 
   // loop through from symbol node to root and find bit reverse bit
   // sequence
+  if(currentNode->p){
   while (currentNode->p) {
     parentNode = currentNode->p;
     // if right child, bit is 0
@@ -94,11 +95,17 @@ void HCTree::encode(byte symbol, BitOutputStream& out) const{
     }
     currentNode = parentNode;
   }
+  }
 
+  else if(root == currentNode){
+    bits.push(1);
+    bits_size++;
+  }
   // pop off all bits in stack to get sequence in correct order
   for(int i=0; i<bits_size; i++){
     //cout << bits_size << endl;
     bit = bits.top();
+    cout << "Bits Printed: "<< bit << endl;
     out.writeBit(bit); // write to file's buffer as bit
     bits.pop();
   }
