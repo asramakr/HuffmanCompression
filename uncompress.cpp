@@ -23,12 +23,12 @@ int main(int argc, char** argv)
   unsigned char nextChar; // char taken from file
   int nextByte; // nextChar to int
   int freqCount; // freqs read from infile
-  vector<int> freqs; // vector of freqs of each char from infile
+  vector<int> freqs; // vector of which symbs appear in the file
   HCTree newTree; // tree to build using freqs
   string readLine; // var to hold each read in freq
-  vector<int> totalFreq;
-  int counter = 0;
-  int totalSize = 0;
+  vector<int> totalFreq; // vector for actual freq values for each symb
+  int counter = 0; // counter for all bytes in original file
+  int totalSize = 0; // how many bytes were in original file
 
   // initialize freqs to 0
   for (int i = 0; i < HEADERSIZE; i++) {
@@ -39,35 +39,36 @@ int main(int argc, char** argv)
   infile.open(argv[1], std::ios::binary);
   BitInputStream in(infile);
 
-  /* old header reading system
-  // read 256 lines of freqs
-  for (int i = 0; i < HEADERSIZE; i++) {
-    getline(infile, readLine);
-    freqCount = stoi(readLine); // convert read string to int
-    freqs.at(i) = freqCount; // insert freq into index
-  }
-  */
-
-  //new header reading system
-  
+  // read in the flags for which ASCII symbols appear  
   for(int i = 0; i<8; i++){
-    getline(infile, readLine);
+    getline(infile, readLine); 
     freqCount = stoi(readLine);
+
+    // single out each flag and set it in the vector of
+    // symbols that appear in the file
     for(int j = 0; j<32; j++){
       freqs.at((i*32)+j) = freqCount & (int)(pow(2, 31-j));
+
+      // get the actual frequency of each symbol and put it in
+      // a separate vector
       if(freqs.at((i*32)+j) != 0){
         totalFreq.push_back((i*32)+j);
       }
     }
   }
+
+  // read in the actual freq values from the header
   for(int i=0; i<totalFreq.size(); i++){
     getline(infile, readLine);
     freqCount = stoi(readLine);
+
+    // set the freq for that specific symb
     freqs.at(totalFreq.at(i)) = freqCount;
-    cout << "Chars In Message: " << totalFreq.at(i) << endl;
-    cout << "Number of Chars: " << freqs[totalFreq.at(i)] << endl;    
+    //cout << "Chars In Message: " << totalFreq.at(i) << endl;
+    //cout << "Number of Chars: " << freqs[totalFreq.at(i)] << endl;    
   }
 
+  // count how many bytes were in original file
   for(int i=0; i<freqs.size(); i++){
     totalSize+=freqs[i];
   }
@@ -102,7 +103,7 @@ int main(int argc, char** argv)
 //    cout << "return: " << decodedChar << endl;
 
     // write decoded symbol to file
-    cout << "Decoded Char: " << decodedChar << endl;
+    //cout << "Decoded Char: " << decodedChar << endl;
     outfile << decodedChar;
     //cout << "ENCODING: " << decodedChar << endl; 
     counter++;   

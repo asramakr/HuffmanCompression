@@ -1,3 +1,10 @@
+/**
+ * Authors: Alexis Atianzar & Arun Ramakrishnan
+ * Date: 11/7/16
+ * Description: Contains the method signatures and variables associated
+ * under all BitOutputStream objects, which derives from the ostream class
+ */
+
 #include <iostream>
 #include <fstream>
 #ifndef BITOUTPUTSTREAM_H

@@ -22,14 +22,12 @@ int main(int argc, char** argv)
   unsigned char nextChar; //the next char to be read
   int nextByte; //the next byte, which checks EOF
   vector<int> freqs; //the vector of frequencies of each letter in the tree
-  vector<int> freqsInit;
+  vector<int> freqsInit; // flag counter for which ASCII symbs are in file
   HCTree newTree; //the HCTree
   //unsigned int numOfSymbols = 0;
 
-  //cout << "Reading from file "' << argv[1] << '"' << "...";
 
   infile.open(argv[1], std::ios::binary); //opens the file
-  //cout << "done." << endl;
 
   for(int i=0; i<256; i++){
     freqs.push_back(0); //pushes each letter into the vector
@@ -51,33 +49,28 @@ int main(int argc, char** argv)
   outfile.open(argv[2], std::ios::binary); //opens it so it can write to it
   BitOutputStream out(outfile);
 
-  /*
-  //writes the header to the outfile, aka the freqs of each character
-  for(int i=0; i<256; i++){
-    outfile << freqs[i];
-    outfile << '\n';
-  }
-  */
+  // make header to hold bit flags for each 256 ASCII symbol
 
-  //new header tests
+  int header1 = 0; // flags for 1-32 in ASCII
+  int header2 = 0; // flags for 33-64 in ASCII
+  int header3 = 0; // flags for 65-96 in ASCII
+  int header4 = 0; // flags for 97-128 in ASCII
+  int header5 = 0; // flags for 129-160 in ASCII
+  int header6 = 0; // flags for 161-192 in ASCII
+  int header7 = 0; // flags for 193-224 in ASCII
+  int header8 = 0; // flags for 225-256 in ASCII
 
-  int header1 = 0;
-  int header2 = 0;
-  int header3 = 0;
-  int header4 = 0;
-  int header5 = 0;
-  int header6 = 0;
-  int header7 = 0;
-  int header8 = 0;
-
+  // fill the flag for each ASCII symbol if it appears in file
   for(int i=0; i<256; i++){
     if(freqs[i] != 0){
-      cout << "Chars In Message: " << i << endl;
-      cout <<"Number of Chars: " << freqs[i] << endl;
+      //cout << "Chars In Message: " << i << endl;
+      //cout <<"Number of Chars: " << freqs[i] << endl;
       freqsInit[i] = 1;
     }
   }
 
+  // set the header ints with flags for the according ASCII symbols 
+  // in that range
   for(int i=0; i<32; i++){
     header1 = header1 | (int)(freqsInit[i]*pow(2, 31-i));
   }
@@ -103,6 +96,7 @@ int main(int argc, char** argv)
     header8 = header8 | (int)(freqsInit[i+224]*pow(2, 31-i));
   }
 
+  // print the header ints w flags in the output file
   outfile << header1 << endl;
   outfile << header2 << endl;
   outfile << header3 << endl;
@@ -113,7 +107,8 @@ int main(int argc, char** argv)
   outfile << header8 << endl;
 
 
-
+  // print out the frequencies for the existing symbols into 
+  // the output file
   for(int i=0; i<256; i++){
     if(freqs[i] != 0){
       outfile << freqs[i] << endl;
@@ -127,22 +122,28 @@ int main(int argc, char** argv)
  
   //pulls the bytes from the infile
   while((nextByte = infile.get()) != EOF){
+
+    // if end of file is reached, exit
     if (infile.eof()) {
       break;
     }    
     nextChar = (unsigned char)nextByte; 
-    cout << "NextByte: " << nextChar << endl;
+
+    //cout << "NextByte: " << nextChar << endl;
     //cout << "ENCODING " << nextChar << endl;
+
     newTree.encode( nextChar, out); //encodes the byte
-//    cout << "nextChar: " << nextChar << endl;
+
+    //cout << "nextChar: " << nextChar << endl;
     
+    // if end of file is reached, exit
     if(infile.eof()){
       break; //breaks if end of file
     }
 
   }
 
-  out.flush();
+  out.flush(); // flush rest of buffer in outfile
 
   outfile.close(); //closes both files
   infile.close();

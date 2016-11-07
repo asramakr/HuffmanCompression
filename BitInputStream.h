@@ -1,3 +1,10 @@
+/**
+ * Authors: Alexis Atianzar & Arun Ramakrishnan
+ * Date: 11/7/16
+ * Description: Contains the method signatures and variables associated
+ * under all BitInputStream objects, which derives from the istream class
+ */
+
 #include <iostream>
 #include <fstream>
 #ifndef BITINPUTSTREAM_H
@@ -21,6 +28,10 @@ class BitInputStream {
      *  Fill it first if necessary. */
     int readBit();
 
+    /**
+     * Checks if end of BitInputStream file is reached, calling istream's
+     * eof()
+     */
     int eof();
 };
 
